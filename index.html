@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cidade Financeira</title>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #e6f2ff;
+  margin: 0;
+  padding: 10px;
+}
+h1 { text-align: center; }
+
+.box {
+  background: white;
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 10px;
+}
+
+button {
+  width: 100%;
+  padding: 15px;
+  margin: 5px 0;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  background: #007bff;
+  color: white;
+}
+
+button.red { background: #dc3545; }
+button.green { background: #28a745; }
+button.gray { background: #6c757d; }
+
+.stats p { margin: 5px 0; }
+</style>
+</head>
+
+<body>
+
+<h1>🏙️ Cidade Financeira</h1>
+
+<div class="box stats">
+  <p>📅 Mês: <span id="mes"></span></p>
+  <p>💰 Saldo: €<span id="saldo"></span></p>
+  <p>🏦 Poupança: €<span id="poupanca"></span></p>
+  <p>📈 Investimentos: €<span id="investimentos"></span></p>
+</div>
+
+<div class="box">
+  <button onclick="poupar()">🏦 Banco – Poupar €100</button>
+  <button onclick="investir()">📈 Bolsa – Investir €200</button>
+  <button onclick="comprarCarro()">🚗 Comprar carro (€5000)</button>
+  <button onclick="pagarUniversidade()">🎓 Pagar universidade (€10000)</button>
+</div>
+
+<div class="box">
+  <button class="green" onclick="proximoMes()">⏭️ Passar mês</button>
+  <button class="gray" onclick="novoJogo()">🔄 Novo jogo</button>
+</div>
+
+<div class="box">
+  <p id="mensagem"></p>
+</div>
+
+<script>
+let jogo = JSON.parse(localStorage.getItem("cidadeFinanceira")) || {
+  mes: 1,
+  saldo: 1000,
+  poupanca: 0,
+  investimentos: 0,
+  carro: false,
+  universidade: false
+};
+
+function guardar() {
+  localStorage.setItem("cidadeFinanceira", JSON.stringify(jogo));
+}
+
+function atualizar() {
+  mes.innerText = jogo.mes;
+  saldo.innerText = jogo.saldo;
+  poupanca.innerText = jogo.poupanca;
+  investimentos.innerText = jogo.investimentos;
+  guardar();
+}
+
+function mensagem(txt) {
+  document.getElementById("mensagem").innerText = txt;
+}
+
+function poupar() {
+  if (jogo.saldo >= 100) {
+    jogo.saldo -= 100;
+    jogo.poupanca += 100;
+    mensagem("Poupaste €100.");
+  } else mensagem("Saldo insuficiente.");
+  atualizar();
+}
+
+function investir() {
+  if (jogo.saldo >= 200) {
+    jogo.saldo -= 200;
+    jogo.investimentos += 200;
+    mensagem("Investimento feito.");
+  } else mensagem("Saldo insuficiente.");
+  atualizar();
+}
+
+function proximoMes() {
+  jogo.mes++;
+  jogo.saldo += 800;       // salário
+  jogo.saldo -= 500;       // despesas
+
+  let retorno = Math.floor(jogo.investimentos * (Math.random() * 0.15 - 0.05));
+  jogo.investimentos += retorno;
+
+  mensagem("Novo mês! Salário recebido, despesas pagas.");
+  atualizar();
+}
+
+function comprarCarro() {
+  if (!jogo.carro && jogo.saldo >= 5000) {
+    jogo.saldo -= 5000;
+    jogo.carro = true;
+    mensagem("Compraste um carro 🚗");
+  } else mensagem("Não tens dinheiro suficiente ou já tens carro.");
+  atualizar();
+}
+
+function pagarUniversidade() {
+  if (!jogo.universidade && jogo.saldo >= 10000) {
+    jogo.saldo -= 10000;
+    jogo.universidade = true;
+    mensagem("Universidade paga 🎓");
+  } else mensagem("Dinheiro insuficiente ou já paga.");
+  atualizar();
+}
+
+function novoJogo() {
+  if (confirm("Queres começar um novo jogo?")) {
+    localStorage.removeItem("cidadeFinanceira");
+    location.reload();
+  }
+}
+
+atualizar();
+</script>
+
+</body>
+</html>
